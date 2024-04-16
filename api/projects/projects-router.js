@@ -43,7 +43,26 @@ const projects = require("./projects-model");
       });
   });
   
-
+  router.post("/", (req, res) => {
+    const newProject = req.body;
+  
+    if (!newProject.name || !newProject.description) {
+      return res.status(400).json({ message: "Name and description are required" });
+    }
+  
+    projects.insert(newProject)
+      .then((createdProject) => {
+        res.status(201).json(createdProject);
+      })
+      .catch((err) => {
+        res.status(500).json({
+          message: "Error inserting project",
+          err: err.message,
+          stack: err.stack,
+        });
+      });
+  });
+  
 
 
 module.exports = router
