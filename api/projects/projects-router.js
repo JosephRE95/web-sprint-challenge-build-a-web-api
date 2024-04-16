@@ -5,21 +5,20 @@ const router = express.Router()
 
 const projects = require("./projects-model");
 
+const errorHandler = require("./projects-middleware"); // Import the error handler middleware
 
-  router.get("/", (req, res) => {
+
+
+  router.get("/", (req, res, next) => {
     projects.get()
       .then((found) => {
         res.json(found);
         console.log(found)
       })
-      .catch((err) => {
-        res.status(500).json({
-          message: "The posts information could not be retrieved",
-          err: err.message,
-          stack: err.stack,
-        });
-      });
-  });
+      .catch(next)
+     });
+      
+  
 
 
   router.get("/:id", (req, res) => {
@@ -115,6 +114,29 @@ const projects = require("./projects-model");
           stack: err.stack,
         });
       });
+  });
+
+
+  router.get("/:id/actions", async (req, res) => {
+    const projectId = req.params.id;
+  
+    try {
+      // Check if the project exists
+      const project = await projects.get(projectId);
+      if (!project) {
+        return res.status(404).json({ message: "Project not found" });
+      }
+  
+      // Retrieve actions belonging to the project
+      const projectActions = await projects.getProjectActions(projectId);
+      res.json(projectActions);
+    } catch (err) {
+      res.status(500).json({
+        message: "Error retrieving actions for the project",
+        err: err.message,
+        stack: err.stack,
+      });
+    }
   });
   
 
