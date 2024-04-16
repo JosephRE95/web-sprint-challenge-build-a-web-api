@@ -95,6 +95,29 @@ router.get("/", (req, res) => {
       });
   });
   
+  router.delete("/:id", (req, res) => {
+    const actionId = req.params.id;
+  
+    // Delete the action from the database
+    action.remove(actionId)
+      .then((deletedCount) => {
+        if (deletedCount > 0) {
+          // If action deleted successfully, respond with a 204 status code (no content)
+          res.status(204).end();
+        } else {
+          // If no action found with the given ID, respond with a 404 status code
+          res.status(404).json({ message: "Action not found" });
+        }
+      })
+      .catch((err) => {
+        // If there's any error during the process, respond with a 500 status code and an error message
+        res.status(500).json({
+          message: "Error deleting action",
+          err: err.message,
+          stack: err.stack,
+        });
+      });
+  });
   
   
 
