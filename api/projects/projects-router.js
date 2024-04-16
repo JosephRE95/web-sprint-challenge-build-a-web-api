@@ -93,6 +93,30 @@ const projects = require("./projects-model");
       });
   });
   
+  router.delete("/:id", (req, res) => {
+    const projectId = req.params.id;
+  
+    // Delete the project from the database
+    projects.remove(projectId)
+      .then((deletedCount) => {
+        if (deletedCount > 0) {
+          // If project deleted successfully, respond with a 204 status code (no content)
+          res.status(204).end();
+        } else {
+          // If no project found with the given ID, respond with a 404 status code
+          res.status(404).json({ message: "Project not found" });
+        }
+      })
+      .catch((err) => {
+        // If there's any error during the process, respond with a 500 status code and an error message
+        res.status(500).json({
+          message: "Error deleting project",
+          err: err.message,
+          stack: err.stack,
+        });
+      });
+  });
+  
 
 
 module.exports = router
