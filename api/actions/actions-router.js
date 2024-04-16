@@ -65,6 +65,35 @@ router.get("/", (req, res) => {
       });
   });
   
+  router.put("/:id", (req, res) => {
+    const actionId = req.params.id;
+    const updatedAction = req.body;
+  
+    // Check if required fields are missing
+    if (!updatedAction.notes || !updatedAction.description || updatedAction.completed === undefined || !updatedAction.project_id) {
+      return res.status(400).json({ message: "Notes, description, completed, and project_id are required" });
+    }
+  
+    // Update the action in the database
+    action.update(actionId, updatedAction)
+      .then((updated) => {
+        if (updated) {
+          // If updated successfully, respond with the updated action
+          res.json(updated);
+        } else {
+          // If the action with the specified ID does not exist, respond with a 404 status code
+          res.status(404).json({ message: "Action not found" });
+        }
+      })
+      .catch((err) => {
+        // If there's any error during the process, respond with a 500 status code and an error message
+        res.status(500).json({
+          message: "Error updating action",
+          err: err.message,
+          stack: err.stack,
+        });
+      });
+  });
   
   
   
