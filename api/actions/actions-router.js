@@ -23,6 +23,28 @@ router.get("/", (req, res) => {
   });
 
   
+  router.get("/:id", (req, res) => {
+    const actionId = req.params.id;
+  
+    action.get(actionId)
+      .then((foundAction) => {
+        if (foundAction) {
+          res.json(foundAction);
+          console.log(foundAction);
+        } else {
+          res.status(404).json({ message: "Action not found" });
+        }
+      })
+      .catch((err) => {
+        res.status(500).json({
+          message: "The action information could not be retrieved",
+          err: err.message,
+          stack: err.stack,
+        });
+      });
+  });
+  
+  
   
 
 
